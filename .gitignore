@@ -1,0 +1,15 @@
+node_modules
+dist
+coverage
+.DS_Store
+
+# Local environment and secret overrides
+.env
+.env.*
+*.local
+*.local.*
+
+# Optional app-specific local data overrides
+src/app/context/*.local.ts
+src/app/context/*.local.tsx
+src/app/context/*.local.json
