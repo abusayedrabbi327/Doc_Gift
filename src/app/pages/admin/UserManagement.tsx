@@ -7,6 +7,8 @@ import { Search, Plus, Trash2, Eye, X, CreditCard, Users, User, CheckCircle } fr
 import { useApp } from '../../context/AppContext';
 import { useNavigate, Navigate } from 'react-router';
 
+const env = import.meta.env as Record<string, string | undefined>;
+
 export default function UserManagement() {
   const navigate = useNavigate();
   const { currentUser, doctors, salesReps, orders, assignCreditsToDoctor, deleteUser, addUser } = useApp();
@@ -58,7 +60,7 @@ export default function UserManagement() {
   const handleAddUser = (e: React.FormEvent) => {
     e.preventDefault();
     const data = addRole === 'doctor'
-      ? { ...newUser, password: newUser.password || 'changeme123' }
+      ? { ...newUser, password: newUser.password || env.VITE_DEFAULT_DOCTOR_PASSWORD || '' }
       : { name: newUser.name, email: newUser.email, password: newUser.password, phone: newUser.phone, territory: newUser.territory };
     addUser(addRole, data);
     setAdded(true);

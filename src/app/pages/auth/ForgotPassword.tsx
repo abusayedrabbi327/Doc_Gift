@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader } from '../../components/Card';
 import { Heart, ArrowLeft, Mail, AlertCircle, CheckCircle, IdCard } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
+const env = import.meta.env as Record<string, string | undefined>;
+
 export default function ForgotPassword() {
   const navigate = useNavigate();
   const { salesReps } = useApp();
@@ -12,7 +14,7 @@ export default function ForgotPassword() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const ADMIN_EMAIL = 'admin@giftexchange.com';
+  const ADMIN_EMAIL = env.VITE_ADMIN_EMAIL ?? '';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

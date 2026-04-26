@@ -42,6 +42,8 @@
 
   ## Getting Started
 
+  Create a local `.env` file in the project root. You can copy the provided `.env.example` and fill in the demo values for local use.
+
   Install dependencies:
 
   ```bash

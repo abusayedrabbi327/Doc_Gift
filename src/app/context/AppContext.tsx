@@ -1,5 +1,24 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 
+const env = import.meta.env as Record<string, string | undefined>;
+
+const adminEmail = env.VITE_ADMIN_EMAIL ?? '';
+const adminPassword = env.VITE_ADMIN_PASSWORD ?? '';
+const doctorPasswords = {
+  'DOC-12345': env.VITE_DOCTOR_12345_PASSWORD ?? '',
+  'DOC-67890': env.VITE_DOCTOR_67890_PASSWORD ?? '',
+  'DOC-11111': env.VITE_DOCTOR_11111_PASSWORD ?? '',
+  'DOC-22222': env.VITE_DOCTOR_22222_PASSWORD ?? '',
+} as const;
+
+const salesPasswords = {
+  'SR-001': env.VITE_SALES_SR_001_PASSWORD ?? '',
+  'SR-002': env.VITE_SALES_SR_002_PASSWORD ?? '',
+} as const;
+
+const defaultDoctorPassword = env.VITE_DEFAULT_DOCTOR_PASSWORD ?? '';
+const defaultUserPassword = env.VITE_DEFAULT_USER_PASSWORD ?? '';
+
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 export interface Doctor {
@@ -124,7 +143,7 @@ export type CurrentUser = { role: 'doctor'; data: Doctor } | { role: 'sales'; da
 
 const initialDoctors: Doctor[] = [
   {
-    id: 'DOC-12345', companyId: 'DOC-12345', password: 'password123',
+    id: 'DOC-12345', companyId: 'DOC-12345', password: doctorPasswords['DOC-12345'],
     name: 'Dr. Sarah Johnson', email: 'sarah.johnson@hospital.com', phone: '+1 (555) 123-4567',
     specialty: 'Cardiology', licenseNumber: 'MD-12345-CA', yearsOfExperience: '12',
     hospital: 'City General Hospital', hospitalAddress: '123 Medical Center Drive, San Francisco, CA 94102',
@@ -134,7 +153,7 @@ const initialDoctors: Doctor[] = [
     status: 'active', assignedSalesRepId: 'SR-001', memberSince: 'Jan 2025',
   },
   {
-    id: 'DOC-67890', companyId: 'DOC-67890', password: 'pass456',
+    id: 'DOC-67890', companyId: 'DOC-67890', password: doctorPasswords['DOC-67890'],
     name: 'Dr. Emily Rodriguez', email: 'emily.r@medcenter.com', phone: '+1 (555) 345-6789',
     specialty: 'Neurology', licenseNumber: 'MD-67890-CA', yearsOfExperience: '9',
     hospital: 'Advanced Neurology Institute', hospitalAddress: '456 Brain Science Blvd, San Diego, CA 92103',
@@ -144,7 +163,7 @@ const initialDoctors: Doctor[] = [
     status: 'active', assignedSalesRepId: 'SR-002', memberSince: 'Feb 2025',
   },
   {
-    id: 'DOC-11111', companyId: 'DOC-11111', password: 'doc111',
+    id: 'DOC-11111', companyId: 'DOC-11111', password: doctorPasswords['DOC-11111'],
     name: 'Dr. Michael Chen', email: 'michael.chen@clinic.com', phone: '+1 (555) 234-5678',
     specialty: 'Pediatrics', licenseNumber: 'MD-11111-CA', yearsOfExperience: '8',
     hospital: "Children's Medical Center", hospitalAddress: '789 Kids Health Ave, Los Angeles, CA 90001',
@@ -154,7 +173,7 @@ const initialDoctors: Doctor[] = [
     status: 'active', assignedSalesRepId: 'SR-001', memberSince: 'Nov 2024',
   },
   {
-    id: 'DOC-22222', companyId: 'DOC-22222', password: 'doc222',
+    id: 'DOC-22222', companyId: 'DOC-22222', password: doctorPasswords['DOC-22222'],
     name: 'Dr. James Wilson', email: 'j.wilson@healthcare.com', phone: '+1 (555) 456-7890',
     specialty: 'Oncology', licenseNumber: 'MD-22222-CA', yearsOfExperience: '15',
     hospital: 'Cancer Treatment Center', hospitalAddress: '321 Hope Lane, Sacramento, CA 95814',
@@ -167,13 +186,13 @@ const initialDoctors: Doctor[] = [
 
 const initialSalesReps: SalesRep[] = [
   {
-    id: 'SR-001', name: 'Michael Chen', email: 'michael@giftrep.com', password: 'sales123',
+    id: 'SR-001', name: 'Michael Chen', email: 'michael@giftrep.com', password: salesPasswords['SR-001'],
     phone: '+1 (555) 777-8888', territory: 'Northern California',
     credits: 50000, doctorIds: ['DOC-12345', 'DOC-11111'],
     status: 'active', joinDate: '2024-11-20',
   },
   {
-    id: 'SR-002', name: 'Emily Davis', email: 'emily@giftrep.com', password: 'sales456',
+    id: 'SR-002', name: 'Emily Davis', email: 'emily@giftrep.com', password: salesPasswords['SR-002'],
     phone: '+1 (555) 999-0000', territory: 'Southern California',
     credits: 35000, doctorIds: ['DOC-67890', 'DOC-22222'],
     status: 'active', joinDate: '2025-01-05',
@@ -181,7 +200,7 @@ const initialSalesReps: SalesRep[] = [
 ];
 
 const initialAdmin: Admin = {
-  id: 'ADMIN-001', name: 'Admin User', email: 'admin@giftexchange.com', password: 'admin123',
+  id: 'ADMIN-001', name: 'Admin User', email: adminEmail, password: adminPassword,
 };
 
 const initialProducts: Product[] = [
@@ -494,7 +513,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (!req) return;
     const newId = `DOC-${String(Math.floor(Math.random() * 90000) + 10000)}`;
     const newDoctor: Doctor = {
-      id: newId, companyId: newId, password: 'changeme123',
+      id: newId, companyId: newId, password: defaultDoctorPassword,
       name: req.doctorData.name, email: req.doctorData.email, phone: req.doctorData.phone,
       specialty: req.doctorData.specialty, licenseNumber: req.doctorData.licenseNumber,
       yearsOfExperience: '0', hospital: req.doctorData.hospital,
@@ -534,7 +553,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const addUser = (role: 'doctor' | 'sales', data: any) => {
     if (role === 'doctor') {
       const newId = `DOC-${String(Math.floor(Math.random() * 90000) + 10000)}`;
-      setDoctors(prev => [...prev, { ...data, id: newId, companyId: newId, credits: 0, totalCreditsEarned: 0, totalCreditsUsed: 0, status: 'active', memberSince: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) }]);
+      setDoctors(prev => [...prev, { ...data, id: newId, companyId: newId, password: data.password || defaultUserPassword, credits: 0, totalCreditsEarned: 0, totalCreditsUsed: 0, status: 'active', memberSince: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) }]);
     } else {
       const newId = `SR-${String(salesReps.length + 3).padStart(3, '0')}`;
       setSalesReps(prev => [...prev, { ...data, id: newId, credits: 0, doctorIds: [], status: 'active', joinDate: new Date().toISOString().split('T')[0] }]);
